@@ -1,8 +1,25 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Play, Pause, RotateCcw, Timer, Trophy, Clock, Medal, RefreshCw, ChevronDown, GitMerge, Table, Award, Download } from 'lucide-react'
+import { Play, Pause, RotateCcw, Timer, Trophy, Clock, Medal, RefreshCw, GitMerge, Table, Award, Download, ExternalLink } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import './App.css'
+
+// Sponsor configuration - customize this for your tournament
+interface SponsorConfig {
+  name: string
+  logo: string  // URL to logo image
+  website?: string
+  tagline?: string
+  enabled: boolean
+}
+
+const SPONSOR: SponsorConfig = {
+  name: 'VDE Mittelbaden e.V.',
+  logo: '/sponsor.svg',  // Place your logo in the public folder
+  website: 'https://example.com',
+  tagline: 'Proud sponsor of this tournament',
+  enabled: true  // Set to true to display sponsor
+}
 
 // Types for Kickertool API
 interface TeamStats {
@@ -538,43 +555,68 @@ function App() {
       {/* Header */}
       <header className="header">
         <div className="header-content">
-          <div className="logo-section">
-            <Trophy className="trophy-icon" />
-            <h1 className="title">{pageName}</h1>
+          {/* Sponsor Section - Left */}
+          <div className="header-left">
+            {SPONSOR.enabled && (
+              <div className="sponsor-section">
+                {SPONSOR.website ? (
+                  <a href={SPONSOR.website} target="_blank" rel="noopener noreferrer" className="sponsor-link">
+                    <img src={SPONSOR.logo} alt={SPONSOR.name} className="sponsor-logo" />
+                    {SPONSOR.tagline && <span className="sponsor-tagline">{SPONSOR.tagline}</span>}
+                    <ExternalLink size={12} className="sponsor-external-icon" />
+                  </a>
+                ) : (
+                  <div className="sponsor-display">
+                    <img src={SPONSOR.logo} alt={SPONSOR.name} className="sponsor-logo" />
+                    {SPONSOR.tagline && <span className="sponsor-tagline">{SPONSOR.tagline}</span>}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
-          {tournaments.length > 0 && (
-            <div className="tournament-selector">
-              <select
-                value={selectedTournamentId}
-                onChange={(e) => setSelectedTournamentId(e.target.value)}
-                className="tournament-dropdown"
-              >
-                {tournaments.map((t) => (
-                  <option key={t._id} value={t._id}>
-                    {t.name} ({new Date(t.date).toLocaleDateString('de-DE')})
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="dropdown-icon" size={18} />
-            </div>
-          )}
+          {/* Title Section - Center */}
+          <div className="header-center">
+            <Trophy className="trophy-icon" />
+            <h1 className="title">
+              {tournaments.length > 1 ? (
+                <select
+                  value={selectedTournamentId}
+                  onChange={(e) => setSelectedTournamentId(e.target.value)}
+                  className="title-dropdown"
+                >
+                  {tournaments.map((t) => (
+                    <option key={t._id} value={t._id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                tournamentData?.name || pageName
+              )}
+              {/* {tournaments.length > 1 && ' ▼'} */}
+              {tournaments.length > 1}
+            </h1>
+          </div>
           
-          <div className="clock-section">
-            <Clock className="clock-icon" />
-            <span className="current-time">{formatCurrentTime(currentTime)}</span>
-            
-            {/* Export Button */}
-            {hasEliminations && (
-              <button 
-                onClick={exportToPDF} 
-                className="export-btn"
-                title="Als PDF exportieren"
-                disabled={isExporting}
-              >
-                <Download size={18} className={isExporting ? 'spinning' : ''} />
-              </button>
-            )}
+          {/* Clock Section - Right */}
+          <div className="header-right">
+            <div className="clock-section">
+              <Clock className="clock-icon" />
+              <span className="current-time">{formatCurrentTime(currentTime)}</span>
+              
+              {/* Export Button */}
+              {hasEliminations && (
+                <button 
+                  onClick={exportToPDF} 
+                  className="export-btn"
+                  title="Als PDF exportieren"
+                  disabled={isExporting}
+                >
+                  <Download size={18} className={isExporting ? 'spinning' : ''} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </header>
