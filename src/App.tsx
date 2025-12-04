@@ -17,7 +17,7 @@ const SPONSOR: SponsorConfig = {
   name: 'VDE Mittelbaden e.V.',
   logo: '/sponsor.svg',  // Place your logo in the public folder
   website: 'https://example.com',
-  tagline: 'Proud sponsor of this tournament',
+  tagline: 'Langjähriger Sponsor von der Fachschaft EIT',
   enabled: true  // Set to true to display sponsor
 }
 
